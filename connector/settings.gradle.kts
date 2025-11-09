@@ -5,6 +5,11 @@
  *
  * SPDX-License-Identifier: Elastic-2.0
  */
+
+// Enable automatic JDK toolchain download via Foojay resolver
+plugins {
+	id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
 rootProject.name = "connector"
 
 include(":ce:connector-ce")

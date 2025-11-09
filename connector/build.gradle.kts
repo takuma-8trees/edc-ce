@@ -23,6 +23,7 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -89,6 +90,10 @@ subprojects {
 
     plugins.withType<JavaPlugin> {
         configure<JavaPluginExtension> {
+            // Ensure Gradle uses JDK toolchain matching libs.versions.java (auto-provision JDK 21)
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get().toInt()))
+            }
             sourceSets.configureEach {
                 if (name == "main") {
                     java.srcDirs("src/main/java", "src/main/kotlin")
@@ -101,6 +106,8 @@ subprojects {
 
     plugins.withType<KotlinPlatformJvmPlugin> {
         configure<KotlinProjectExtension> {
+            // Align Kotlin toolchain with Java toolchain
+            jvmToolchain(libs.versions.java.get().toInt())
             sourceSets.configureEach {
                 if (name == "main") {
                     kotlin.srcDirs("src/main/kotlin")
