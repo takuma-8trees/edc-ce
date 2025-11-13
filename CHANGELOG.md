@@ -2,6 +2,44 @@
 
 The versions of the sovity EDC CE are aligned with the sovity EDC EE.
 
+## [Unreleased]
+
+### Overview
+
+Add multi-architecture Docker image support for AMD64 and ARM64 platforms.
+
+#### Minor Changes
+
+- Docker images now support both `linux/amd64` and `linux/arm64` architectures
+- Users on ARM64 platforms (Apple Silicon, Raspberry Pi, ARM servers) can now pull and run containers natively without emulation
+- Multi-architecture manifest automatically selects the correct image for the user's platform
+- Consolidated multi-arch build process into main CI workflow
+
+#### Patch Changes
+
+- GitHub Actions: Added QEMU and Docker Buildx setup for cross-platform builds
+- GitHub Actions: Modified push behavior to skip image push on pull requests (build verification only)
+- Removed separate `multi-arch-build.yml` workflow (integrated into `ci.yml`)
+
+### Deployment Migration Notes
+
+_No special deployment migration steps required_
+
+Users can continue to pull images normally:
+```bash
+docker pull ghcr.io/sovity/edc-ce:latest
+docker pull ghcr.io/sovity/edc-ce-ui:latest
+```
+
+Docker will automatically select the appropriate architecture.
+
+#### Compatible Versions
+
+- EDC CE Backend: `ghcr.io/sovity/edc-ce:latest`
+- EDC CE Frontend: `ghcr.io/sovity/edc-ce-ui:latest`
+- Supported Architectures: `linux/amd64`, `linux/arm64`
+- PostgreSQL: `17`
+
 ## [v16.2.2] - 2025-11-11
 
 ### Overview

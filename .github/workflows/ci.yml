@@ -52,6 +52,7 @@ jobs:
           image-title: "sovity Community Edition EDC Connector"
           image-description: "Eclipse EDC Connector built by sovity. This image supports multiple data spaces and contains multiple kinds of deployments: Standalone Control Plane, Standalone Dataplane, Combined Control and Dataplane"
           connector-dir: "connector/ce/docker-image-ce"
+          platforms: "linux/amd64,linux/arm64"
   build-connector-ui-image-ce:
     name: Build CE Connector UI Image
     runs-on: ubuntu-latest
@@ -80,6 +81,7 @@ jobs:
           image-title: "sovity EDC CE UI"
           image-description: "UI for the sovity EDC CE Connector"
           connector-ui-dir: "frontend"
+          platforms: "linux/amd64,linux/arm64"
   run-connector-tests-ce:
     name: Run CE Gradle Tests
     runs-on: ubuntu-latest
@@ -236,7 +238,6 @@ jobs:
 
           echo "Checking CE Migrations"
           check_migrations_dir "$MIGRATION_DIR_CE" "$PATTERN_CE"
-
 
   ci_status:
     if: always()
