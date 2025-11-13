@@ -52,6 +52,7 @@ jobs:
           image-title: "sovity Community Edition EDC Connector"
           image-description: "Eclipse EDC Connector built by sovity. This image supports multiple data spaces and contains multiple kinds of deployments: Standalone Control Plane, Standalone Dataplane, Combined Control and Dataplane"
           connector-dir: "connector/ce/docker-image-ce"
+          platforms: "linux/amd64,linux/arm64"
   build-connector-ui-image-ce:
     name: Build CE Connector UI Image
     runs-on: ubuntu-latest
@@ -80,6 +81,7 @@ jobs:
           image-title: "sovity EDC CE UI"
           image-description: "UI for the sovity EDC CE Connector"
           connector-ui-dir: "frontend"
+          platforms: "linux/amd64,linux/arm64"
   run-connector-tests-ce:
     name: Run CE Gradle Tests
     runs-on: ubuntu-latest
@@ -237,78 +239,6 @@ jobs:
           echo "Checking CE Migrations"
           check_migrations_dir "$MIGRATION_DIR_CE" "$PATTERN_CE"
 
-  build-arm64-images:
-    name: Build ARM64 Images (Verification Only)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      
-      - name: "Set up JDK 21"
-        uses: actions/setup-java@v3
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-      
-      - name: "Gradle: Validate Gradle Wrapper"
-        uses: gradle/wrapper-validation-action@v3
-      
-      - name: "Gradle: Build Connector JAR"
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          build-root-directory: connector
-          arguments: :ce:docker-image-ce:build -x test
-        env:
-          USERNAME: ${{ env.REGISTRY_USER }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: "Set up Node 20"
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20.x"
-          cache: "yarn"
-          cache-dependency-path: frontend/yarn.lock
-      
-      - name: "Install Frontend Dependencies"
-        working-directory: frontend
-        run: yarn install --immutable
-      
-      - name: "Build Next.js Application"
-        working-directory: frontend
-        run: yarn build-prod
-      
-      - name: "Set up QEMU for ARM64 Build"
-        uses: docker/setup-qemu-action@v2
-      
-      - name: "Set up Docker Buildx"
-        uses: docker/setup-buildx-action@v2
-      
-      - name: "Build Connector Image for ARM64 (No Push)"
-        uses: docker/build-push-action@v4
-        with:
-          file: connector/ce/docker-image-ce/src/main/docker/Dockerfile
-          context: connector/ce/docker-image-ce
-          platforms: linux/arm64
-          push: false
-          build-args: |
-            SOVITY_BUILD_VERSION_ARG=${{ github.sha }}
-            SOVITY_BUILD_DATE_ARG=${{ github.event.head_commit.timestamp }}
-      
-      - name: "Build Frontend Image for ARM64 (No Push)"
-        uses: docker/build-push-action@v4
-        with:
-          file: frontend/Dockerfile
-          context: frontend
-          platforms: linux/arm64
-          push: false
-          build-args: |
-            NEXT_PUBLIC_BUILD_VERSION_ARG=${{ github.sha }}
-            NEXT_PUBLIC_BUILD_DATE_ARG=${{ github.event.head_commit.timestamp }}
-
   ci_status:
     if: always()
     name: CI Status
@@ -320,7 +250,6 @@ jobs:
       - run-connector-tests-ce
       - build-client-library-typescript
       - check-migration-script-names
-      - build-arm64-images
 
     runs-on: ubuntu-latest
 
