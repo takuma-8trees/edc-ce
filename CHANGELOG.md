@@ -2,7 +2,7 @@
 
 The versions of the sovity EDC CE are aligned with the sovity EDC EE.
 
-## [Unreleased]
+## [v16.2.3] - 2025-11-13
 
 ### Overview
 
@@ -18,8 +18,6 @@ Add multi-architecture Docker image support for AMD64 and ARM64 platforms.
 #### Patch Changes
 
 - GitHub Actions: Added QEMU and Docker Buildx setup for cross-platform builds
-- GitHub Actions: Modified push behavior to skip image push on pull requests (build verification only)
-- Removed separate `multi-arch-build.yml` workflow (integrated into `ci.yml`)
 
 ### Deployment Migration Notes
 
